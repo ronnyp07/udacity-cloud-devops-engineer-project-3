@@ -110,7 +110,6 @@ workflows:
     jobs:
       - install-backend-dependencies
       - install-frontend-dependencies
-
       - build-backend:
           - requries:
               - install-backend-dependencies
@@ -119,7 +118,7 @@ workflows:
               - install-frontend-dependencies
       - test-backend:
           - requires:
-            - build-backend
+              - build-backend
       - test-frontend:
           - requires:
-            -  build-frontend
+              -  build-frontend
