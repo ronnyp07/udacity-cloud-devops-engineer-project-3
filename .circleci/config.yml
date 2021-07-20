@@ -118,8 +118,8 @@ workflows:
           - requires:
               - install-frontend-dependencies
       - test-backend:
-          requires:
+          - requires:
             - build-backend
       - test-frontend:
-          requires:
+          - requires:
             -  build-frontend
