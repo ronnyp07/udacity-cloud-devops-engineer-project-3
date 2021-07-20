@@ -111,14 +111,14 @@ workflows:
       - install-backend-dependencies
       - install-frontend-dependencies
       - build-backend:
-          - requries:
-              - install-backend-dependencies
+          requries:
+            - install-backend-dependencies
       - build-frontend:
-          - requires:
-              - install-frontend-dependencies
+          requires:
+            - install-frontend-dependencies
       - test-backend:
-          - requires:
-              - build-backend
+          requires:
+            - build-backend
       - test-frontend:
-          - requires:
-              - build-frontend
+          requires:
+            - build-frontend
