@@ -34,16 +34,13 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
+      - attach_workspace:
+          at: .
       - run:
           name: Build front-end
           working_directory: ./frontend
           command: |
             npm run build
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
 
   build-backend:
     docker:
