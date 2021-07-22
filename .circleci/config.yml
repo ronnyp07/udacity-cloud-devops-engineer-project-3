@@ -14,7 +14,6 @@ jobs:
           paths:
             - backend/node_modules
 
-
   install-frontend-dependencies:
     docker:
       - image: circleci/node:13.8.0
@@ -47,20 +46,49 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      - attach_workspace:
+          at: .
       - run:
-          name: Back-end build
+          name: npm run build
           working_directory: ./backend
           command: npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend/dist
+  
+  test-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install junit coverage reporter
+          working_directory: ./frontend
+          command: npm install --save-dev jest-junit
+      - run:
+          name: Run Test with JUnit
+          working_directory: ./frontend
+          command: npm test -- --ci --runInBand --reporters=default --reporters=jest-junit && pwd && ls -la /tmp
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./test_results
+      - store_test_results:
+          path: ./frontend/test_results
+      - store_artifacts:
+          path: ./frontend/test_results
 workflows:
   default:
     jobs:
-      - install-frontend-dependencies    
-      - build-backend
+      - install-frontend-dependencies
+      - install-backend-dependencies    
+      - build-backend:
+          requires:
+            - install-backend-dependencies
       - build-frontend:
           requires:
             - install-frontend-dependencies
+      - test-frontend:
+          requires:
+            -  build-frontend
