@@ -66,6 +66,8 @@ workflows:
       - install-backend-dependencies
       - install-frontend-dependencies
       - build-backend:
-          requries: [install-backend-dependencies]
+          requires:
+            - install-backend-dependencies
       - build-frontend:
-          requires: [install-frontend-dependencies]
+          requires:
+            - install-frontend-dependencies
