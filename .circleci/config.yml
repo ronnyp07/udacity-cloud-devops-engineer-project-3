@@ -1,35 +1,6 @@
 version: 2.1
 
 jobs:
-  install-backend-dependencies:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: npm install
-          working_directory: ./backend
-          command: ls -la && npm install
-      - persist_to_workspace:
-          root: .
-          paths:
-            - backend/node_modules
-
-
-  install-frontend-dependencies:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: npm install
-          working_directory: ./frontend
-          command: ls -la && npm install
-      - persist_to_workspace:
-          root: .
-          paths:
-            - frontend/node_modules
-
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -63,11 +34,5 @@ jobs:
 workflows:
   default:
     jobs:
-      - install-backend-dependencies
-      - install-frontend-dependencies
-      - build-backend:
-          requires:
-            - install-backend-dependencies
-      - build-frontend:
-          requires:
-            - install-frontend-dependencies
+      - build-backend
+      - build-frontend
