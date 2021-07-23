@@ -111,6 +111,31 @@ jobs:
           path: ./frontend/test_results
       - store_artifacts:
           path: ./frontend/test_results
+
+  scan-frontend:
+    executor: node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Scan FrontEnd Dependencies
+          working_directory: ./frontend
+          command: npm audit --audit-level=critical
+
+
+  scan-backend:
+    executor: node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Scan BackEnd Dependencies
+          working_directory: ./backend
+          command: npm audit --audit-level=critical
+
+
 workflows:
   default:
     jobs:
@@ -128,3 +153,9 @@ workflows:
       - test-frontend:
           requires:
             -  build-frontend
+      - scan-frontend:
+          requires:
+            - build-frontend
+      - scan-backend:
+          requries:
+            - build-backend
