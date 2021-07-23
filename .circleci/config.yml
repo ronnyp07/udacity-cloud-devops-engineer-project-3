@@ -157,5 +157,5 @@ workflows:
           requires:
             - build-frontend
       - scan-backend:
-          requries:
+          requires:
             - build-backend
