@@ -1,5 +1,16 @@
 version: 2.1
 
+executors:
+  node:
+    docker:
+      - image: circleci/node:13.8.0
+  python:
+    docker:
+      - image: python:3.9.0-alpine
+  aws:
+    docker:
+      - image: amazon/aws-cli
+
 jobs:
   install-backend-dependencies:
     docker:
@@ -58,6 +69,27 @@ jobs:
           paths:
             - backend/dist
   
+  test-backend:
+    executor: node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install Junit Reporter
+          working_directory: ./backend
+          command: npm install --save-dev jest-junit
+      - run:
+          name: Run Tests JUnit
+          working_directory: ./backend
+          command: npm test -- --ci --runInBand --reporters=default --reporters=jest-junit && pwd
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./test_results
+      - store_test_results:
+          path: ./backend/test_results
+      - store_artifacts:
+          path: ./backend/test_results
+
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -90,6 +122,9 @@ workflows:
       - build-frontend:
           requires:
             - install-frontend-dependencies
+      - test-backend:
+          requires:
+            - build-backend
       - test-frontend:
           requires:
             -  build-frontend
